@@ -1,10 +1,12 @@
 const routes = require('express').Router();
 const db = require('../dao/db');
 const userDao = require('../dao/userDao');
+const bcrypt = require('bcryptjs');
+
 
 routes.get('/user', (req, res) => {
     userDao.getAllUsers((err, result)=>{
-        if(err) throw error;
+        if(err) throw err;
         res.setHeader('Content-Type', 'application/json');
         res.status(200);
         res.send(result);
@@ -17,17 +19,20 @@ routes.get('/user', (req, res) => {
         res.send(result);
     });
 });
-routes.post('/user',(req, res) => {
+routes.post('/user', (req, response) => {
     const user = req.body;
-    userDao.addUser(user, (err, result) => {
+    // bcrypt.hash(req.body.email, saltRounds, function (err, hash){
+    userDao.addUser(user,  (err, result) => {
         if(err){
             console.log(err);
-            res.status(400);
-            res.send('Add User Failed!');
+            response.status(400);
+            response.send('Add User Failed!');
+           
         }
-        res.status(201);
-        res.send(user);
-    });
+        response.status(201).json(result);
+    })
+    // })
+
 });
 routes.put('/user/:id', (req,res) => {
     const user = req.body;

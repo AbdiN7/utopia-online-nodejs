@@ -1,10 +1,24 @@
-var mysql = require('mysql');
+const Sequelize = require('sequelize')
+const db = {}
+const CONFIG = require('../../config');
+const sequelize = new Sequelize(CONFIG.db_name,
+                                CONFIG.db_user,
+                                CONFIG.db_password,
+{
+  host: CONFIG.db_host,
+  dialect: CONFIG.db_dialect,
+  operatorsAliases: false,
+  tableName: 'user',
 
-var connection = mysql.createConnection({
-    host     : '127.0.0.1',
-    user     : 'root',
-    password : 'admin',
-    database : 'utopia'
-});
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  }
+})
 
-module.exports = connection;
+db.sequelize = sequelize
+db.Sequelize = Sequelize
+
+module.exports = db
