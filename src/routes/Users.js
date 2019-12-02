@@ -3,11 +3,12 @@ const users = express.Router()
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-
+const CONFIG = require('../../config');
 const User = require('../models/User')
 users.use(cors())
 
-process.env.SECRET_KEY = 'secret'
+const _jwtKey = CONFIG.jwt_encryption;
+
 
 users.post('/register', (req, res) => {
   const userData = {
@@ -53,8 +54,8 @@ users.post('/login', (req, res) => {
     .then(user => {
       if (user) {
         if (bcrypt.compareSync(req.body.password, user.password)) {
-          let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
-            expiresIn: 1440
+          let token = jwt.sign(user.dataValues, _jwtKey, {
+            expiresIn: 3600
           })
           res.send(token)
         }
@@ -68,7 +69,7 @@ users.post('/login', (req, res) => {
 })
 
 users.get('/profile', (req, res) => {
-  var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY)
+  var decoded = jwt.verify(req.headers['authorization'], _jwtKey)
 
   User.findOne({
     where: {
@@ -78,11 +79,14 @@ users.get('/profile', (req, res) => {
     .then(user => {
       if (user) {
         res.json(user)
+        res.status(200)
       } else {
+        res.status(404)
         res.send('User does not exist')
       }
     })
     .catch(err => {
+      res.status(403)
       res.send('error: ' + err)
     })
 })

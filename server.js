@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const express = require("express");
 const app = express();
 const cors = require('cors');
-const passport = require('passport');
 const CONFIG = require('./config');
 
 app.use(bodyParser.json());
