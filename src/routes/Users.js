@@ -1,11 +1,11 @@
-const express = require('express')
-const users = express.Router()
-const cors = require('cors')
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
+const express = require('express');
+const users = express.Router();
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const CONFIG = require('../../config');
-const User = require('../models/User')
-users.use(cors())
+const User = require('../models/User');
+users.use(cors());
 
 const _jwtKey = CONFIG.jwt_encryption;
 
@@ -15,9 +15,10 @@ users.post('/register', (req, res) => {
     userFirstName: req.body.userFirstName,
     userLastName: req.body.userLastName,
     email: req.body.email,
+    address: req.body.address,
+    phone: req.body.phone,
     password: req.body.password,
-    cardNumber: req.body.cardNumber
-  }
+  };
   User.findOne({
     where: {
       email: req.body.email
@@ -26,23 +27,23 @@ users.post('/register', (req, res) => {
     .then(user => {
       if (!user) {
         bcrypt.hash(req.body.password, 10, (err, hash) => {
-          userData.password = hash
+            userData.password = hash;
           User.create(userData)
             .then(user => {
-              res.json({ status: user.email + 'Registered!' })
+                res.json({ status: user.email + '  --- Registered!' });
             })
             .catch(err => {
-              res.send('error: ' + err)
-            })
-        })
+                res.send('error: ' + err);
+            });
+        });
       } else {
-        res.json({ error: 'User already exists' })
+          res.json({ error: 'User already exists' });
       }
     })
     .catch(err => {
-      res.send('error: ' + err)
-    })
-})
+        res.send('error: ' + err);
+    });
+});
 
 users.post('/login', (req, res) => {
   User.findOne({
@@ -54,21 +55,21 @@ users.post('/login', (req, res) => {
       if (user) {
         if (bcrypt.compareSync(req.body.password, user.password)) {
           let token = jwt.sign(user.dataValues, _jwtKey, {
-            expiresIn: 3600
-          })
-          res.send(token)
+            expiresIn: 1000
+          });
+            res.send(token);
         }
       } else {
-        res.status(400).json({ error: 'User does not exist' })
+          res.status(400).json({ error: 'User does not exist' });
       }
     })
     .catch(err => {
-      res.status(400).json({ error: err })
-    })
-})
+        res.status(400).json({ error: err });
+    });
+});
 
 users.get('/profile', (req, res) => {
-  var decoded = jwt.verify(req.headers['authorization'], _jwtKey)
+    var decoded = jwt.verify(req.headers['authorization'], _jwtKey);
 
   // var decoded = jwt.verify(req.headers['authorization'].replace('Bearer ',''), _jwtKey)
   User.findOne({
@@ -78,17 +79,17 @@ users.get('/profile', (req, res) => {
   })
     .then(user => {
       if (user) {
-        res.json(user)
-        res.status(200)
+          res.json(user);
+          res.status(200);
       } else {
-        res.status(404)
-        res.send('User does not exist')
+          res.status(404);
+          res.send('User does not exist');
       }
     })
     .catch(err => {
-      res.status(403)
-      res.send('error: ' + err)
-    })
-})
+        res.status(403);
+        res.send('error: ' + err);
+    });
+});
 
-module.exports = users
+module.exports = users;
