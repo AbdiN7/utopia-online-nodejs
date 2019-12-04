@@ -21,8 +21,11 @@ module.exports = db.sequelize.define(
     password: {
       type: Sequelize.STRING
     },
-    cardNumber: {
-      type: Sequelize.STRING,
+    address: {
+      type: Sequelize.STRING
+    },
+    phone: {
+      type: Sequelize.STRING
     },
     // created: {
     //   type: Sequelize.DATE,
