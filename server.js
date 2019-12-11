@@ -25,4 +25,6 @@ app.use('/users', Users);
 app.listen(`${CONFIG.port}`, function () {
     console.log(`app listening on port ${CONFIG.port} `);
 });
+
+module.exports = app;
 //test
