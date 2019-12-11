@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "cross-env NODE_ENV=development nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --exit test/**/*.test.js"
   },
   "author": "abdi",
   "license": "ISC",
@@ -30,5 +30,8 @@
     "sequelize-cli": "^5.5.1",
     "validator": "^12.1.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "chai-http": "^4.3.0",
+    "chai": "^4.2.0"
+  }
 }
