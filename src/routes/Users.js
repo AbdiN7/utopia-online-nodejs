@@ -63,7 +63,6 @@ users.post('/guest', (req, res) => {
     return (random + generator() + random2 + generator() + random3)
   }
   newPass = guestPass();
-  console.log(newPass)
   User.findOne({
     where: {
       email: req.body.email
