@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const CONFIG = require('../../config');
 const User = require('../models/User');
+const generator = require('random-words');
 users.use(cors());
 
 const _jwtKey = CONFIG.jwt_encryption;
@@ -45,7 +46,49 @@ users.post('/register', (req, res) => {
     });
 });
 
-users.post('/login', (req, res) => {
+users.post('/guest', (req, res) => {
+  const guestData = {
+    userFirstName: req.body.userFirstName,
+    userLastName: req.body.userLastName,
+    email: req.body.email,
+    address: req.body.address,
+    phone: req.body.phone,
+  };
+  const guestPass = () => {
+    let min = Math.ceil(0);
+    let max  = Math.floor(50);
+    let random = Math.floor( (Math.random() * (max - min)) + min)
+    let random2 = Math.floor( (Math.random() * (max - min)) + min)
+    let random3 = Math.floor( (Math.random() * (max - min)) + min)
+    return (random + generator() + random2 + generator() + random3)
+  }
+  newPass = guestPass();
+  console.log(newPass)
+  User.findOne({
+    where: {
+      email: req.body.email
+    }
+  })
+    .then(guest => {
+      if (!guest) {
+        bcrypt.hash(newPass, 10, (err, hash) => {
+            guestData.password = hash;
+          User.create(guestData)
+            .then(guest => {
+                res.json({ status: guest.email + '  --- Registered!' });
+            })
+            .catch(err => {
+                res.send('error: ' + err);
+            });
+        });
+      } else {
+          res.json({ error: 'User already exists' });
+      }
+    })
+    .catch(err => {
+        res.send('error: ' + err);
+    });
+});users.post('/login', (req, res) => {
   User.findOne({
     where: {
       email: req.body.email
@@ -67,7 +110,6 @@ users.post('/login', (req, res) => {
         res.status(400).json({ error: err });
     });
 });
-
 users.get('/profile', (req, res) => {
     var decoded = jwt.verify(req.headers['authorization'], _jwtKey);
 
