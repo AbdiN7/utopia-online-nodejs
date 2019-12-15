@@ -63,7 +63,6 @@ users.post('/guest', (req, res) => {
     return (random + generator() + random2 + generator() + random3)
   }
   newPass = guestPass();
-  console.log(newPass)
   User.findOne({
     where: {
       email: req.body.email
@@ -75,7 +74,7 @@ users.post('/guest', (req, res) => {
             guestData.password = hash;
           User.create(guestData)
             .then(guest => {
-                res.json({ status: guest.email + '  --- Registered!' });
+                res.json({ id: guest.userId });
             })
             .catch(err => {
                 res.send('error: ' + err);
