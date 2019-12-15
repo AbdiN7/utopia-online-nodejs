@@ -74,7 +74,7 @@ users.post('/guest', (req, res) => {
             guestData.password = hash;
           User.create(guestData)
             .then(guest => {
-                res.json({ status: guest.email + '  --- Registered!' });
+                res.json({ id: guest.userId });
             })
             .catch(err => {
                 res.send('error: ' + err);
